@@ -1,29 +1,71 @@
 import { test, expect } from '@playwright/test';
+import { link } from 'fs';
+import { text } from 'stream/consumers';
+
+const elements = [
+  {
+    locator: (page) => page.getByRole('link', { name: 'Playwright logo Playwright' }),
+    name: 'Playwright logo',
+    text: 'Playwright',
+  },
+  {
+    locator: (page) => page.getByRole('link', { name: 'Docs' }),
+    name: 'Docs link',
+    text: 'Docs',
+  },
+  {
+    locator: (page) => page.getByRole('link', { name: 'API' }),
+    name: 'API link',
+    text: 'API',
+  },
+  {
+    locator: (page) => page.getByRole('button', { name: 'Node.js' }),
+    name: 'Node.js version',
+    text: 'Node.js',
+  },
+  {
+    locator: (page) => page.getByRole('link', { name: 'Community' }),
+    name: 'Community link',
+    text: 'Community',
+  },
+  {
+    locator: (page) => page.getByRole('link', { name: 'GitHub repository' }),
+    name: 'GitHub',
+  },
+  {
+    locator: (page) => page.getByRole('link', { name: 'Discord server' }),
+    name: 'Discord',
+  },
+  {
+    locator: (page) => page.getByRole('button', { name: 'Switch between dark and light' }),
+    name: 'Theme switcher',
+  },
+  {
+    locator: (page) => page.getByRole('button', { name: 'Search (Command+K)' }),
+    name: 'Search bar',
+  },
+];
 
 test.describe('Main Page Tests', () => {
   test.beforeEach(async ({ page }) => {
     await page.goto('https://playwright.dev/');
   });
   test('Check if navigation elements are visible in header', async ({ page }) => {
-    await expect(page.getByRole('link', { name: 'Playwright logo Playwright' })).toBeVisible();
-    await expect(page.getByRole('link', { name: 'Docs' })).toBeVisible();
-    await expect(page.getByRole('link', { name: 'API' })).toBeVisible();
-    await expect(page.getByRole('link', { name: 'Community' })).toBeVisible();
-    await expect(page.getByRole('link', { name: 'GitHub repository' })).toBeVisible();
-    await expect(page.getByRole('link', { name: 'Discord server' })).toBeVisible();
-    await expect(page.getByRole('button', { name: 'Switch between dark and light' })).toBeVisible();
-    await expect(page.getByRole('button', { name: 'Search (Command+K)' })).toBeVisible();
+    for (const { locator, name } of elements) {
+      await test.step(`Check visibility of ${name}`, async () => {
+        await expect.soft(locator(page)).toBeVisible();
+      });
+    }
   });
 
   test('Checking the name of the header navigation elements', async ({ page }) => {
-    await expect(page.getByRole('link', { name: 'Playwright logo Playwright' })).toContainText(
-      'Playwright',
-    );
-
-    await expect(page.getByRole('link', { name: 'Docs' })).toContainText('Docs');
-    await expect(page.getByRole('link', { name: 'API' })).toContainText('API');
-    await expect(page.getByRole('button', { name: 'Node.js' })).toContainText('Node.js');
-    await expect(page.getByRole('link', { name: 'Community' })).toContainText('Community');
+    elements.forEach(({ locator, name, text }) => {
+      if (text) {
+        test.step(`Check element name ${name}`, async () => {
+          await expect(locator(page)).toContainText(text);
+        });
+      }
+    });
   });
 
   test('Checking href attributes', async ({ page }) => {
