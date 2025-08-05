@@ -1,72 +1,81 @@
-import { test, expect, Locator } from '@playwright/test';
-import { link } from 'fs';
-import { text } from 'stream/consumers';
+import test, { Page, Locator, expect } from '@playwright/test';
 
-const elements = [
+interface Elements{
+  locator: (page: Page) => Locator; 
+  name: string ;
+  text?: string;
+  attribute?: {
+    type: string;
+    value: string;
+  }
+}
+
+const elements: Elements[] = [
   {
     locator: (page: Page): Locator =>
-       page.getByRole('link', { name: 'Playwright logo Playwright' }),
+      page.getByRole('link', { name: 'Playwright logo Playwright' }),
     name: 'Playwright logo',
     text: 'Playwright',
     attribute: {
       type: 'href',
-      value:'/'
-    }
+      value: '/',
+    },
   },
   {
-    locator: (page) => page.getByRole('link', { name: 'Docs' }),
+    locator: (page: Page): Locator => page.getByRole('link', { name: 'Docs' }),
     name: 'Docs link',
     text: 'Docs',
     attribute: {
       type: 'href',
-      value:'/docs/intro'
-    }
+      value: '/docs/intro',
+    },
   },
   {
-    locator: (page) => page.getByRole('link', { name: 'API' }),
+    locator: (page: Page): Locator => page.getByRole('link', { name: 'API' }),
     name: 'API link',
     text: 'API',
     attribute: {
       type: 'href',
-      value:'/docs/api/class-playwright'
-    }
+      value: '/docs/api/class-playwright',
+    },
   },
   {
-    locator: (page) => page.getByRole('button', { name: 'Node.js' }),
+    locator: (page: Page): Locator => page.getByRole('button', { name: 'Node.js' }),
     name: 'Node.js version',
     text: 'Node.js',
   },
   {
-    locator: (page) => page.getByRole('link', { name: 'Community' }),
+    locator: (page: Page): Locator => page.getByRole('link', { name: 'Community' }),
     name: 'Community link',
     text: 'Community',
     attribute: {
       type: 'href',
-      value:'/community/welcome' 
-    }
+      value: '/community/welcome',
+    },
   },
   {
-    locator: (page) => page.getByRole('link', { name: 'GitHub repository' }),
+    locator: (page: Page): Locator => page.getByRole('link', { name: 'GitHub repository' }),
     name: 'GitHub',
     attribute: {
       type: 'href',
-      value:'https://github.com/microsoft/playwright', 
-    }
+      value: 'https://github.com/microsoft/playwright',
+    },
   },
   {
-    locator: (page) => page.getByRole('link', { name: 'Discord server' }),
+    locator: (page: Page): Locator => page.getByRole('link', { name: 'Discord server' }),
     name: 'Discord',
     attribute: {
       type: 'href',
-      value:'https://aka.ms/playwright/discord', 
-    }
+      value: 'https://aka.ms/playwright/discord',
+    },
   },
   {
-    locator: (page) => page.getByRole('button', { name: 'Switch between dark and light' }),
+    locator: (page: Page): Locator =>
+      page.getByRole('button', { name: 'Switch between dark and light' }),
     name: 'Theme switcher',
   },
   {
-    locator: (page) => page.getByRole('button', { name: 'Search (Command+K)' }),
+    locator: (page: Page): Locator => page.getByRole('button', { name: 'Search (Command+K)' }),
     name: 'Search bar',
   },
 ];
@@ -94,14 +103,14 @@ test.describe('Main Page Tests', () => {
   });
 
   test('Checking href attributes', async ({ page }) => {
-  for (const { locator, name, attribute } of elements) {
-    if (attribute) {
-      await test.step(`Check href attribute for ${name}`, async () => {
-        await expect(locator(page)).toHaveAttribute(attribute.type, attribute.value);
-      });
+    for (const { locator, name, attribute } of elements) {
+      if (attribute) {
+        await test.step(`Check href attribute for ${name}`, async () => {
+          await expect(locator(page)).toHaveAttribute(attribute.type, attribute.value);
+        });
+      }
     }
-  }
-});
+  });
 
   test('Checking switch to dark mode', async ({ page }) => {
     await page.getByTitle('system mode').click();
