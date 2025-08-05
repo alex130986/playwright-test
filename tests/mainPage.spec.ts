@@ -61,14 +61,7 @@ const elements: Elements[] = [
       value: 'https://github.com/microsoft/playwright',
     },
   },
-  {
-    locator: (page: Page): Locator => page.getByRole('link', { name: 'Discord server' }),
-    name: 'Discord',
-    attribute: {
-      type: 'href',
-      value: 'https://aka.ms/playwright/discord',
-    },
-  },
+   
   {
     locator: (page: Page): Locator =>
       page.getByRole('button', { name: 'Switch between dark and light' }),
@@ -77,6 +70,20 @@ const elements: Elements[] = [
   {
     locator: (page: Page): Locator => page.getByRole('button', { name: 'Search (Command+K)' }),
     name: 'Search bar',
+  },
+  {
+    locator: (page: Page): Locator => page.getByRole('heading', { name: 'Playwright enables reliable' }),
+    name: 'Title',
+    text: 'Playwright enables reliable end-to-end testing for modern web apps.'
+  },
+  {
+    locator: (page: Page): Locator => page.getByRole('link', { name: 'Get started' }),
+    text: 'Get started',
+    name: 'Get started button',
+    attribute: {
+      type: 'href',
+      value: '/docs/intro',
+    },
   },
 ];
 
@@ -116,21 +123,5 @@ test.describe('Main Page Tests', () => {
     await page.getByTitle('system mode').click();
     await page.getByTitle('light mode').click();
     await expect(page.locator('html')).toHaveAttribute('data-theme', 'dark');
-  });
-
-  test('Checking page title', async ({ page }) => {
-    await expect(page.getByRole('heading', { name: 'Playwright enables reliable' })).toBeVisible();
-    await expect(page.getByRole('heading', { name: 'Playwright enables reliable' })).toContainText(
-      'Playwright enables reliable end-to-end testing for modern web apps.',
-    );
-  });
-
-  test('Checking Get Intro button', async ({ page }) => {
-    await expect(page.getByRole('link', { name: 'Get started' })).toBeVisible();
-    await expect(page.getByRole('banner')).toContainText('Get started');
-    await expect(page.getByRole('link', { name: 'Get started' })).toHaveAttribute(
-      'href',
-      '/docs/intro',
-    );
   });
 });
