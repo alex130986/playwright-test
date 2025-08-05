@@ -1,22 +1,35 @@
-import { test, expect } from '@playwright/test';
+import { test, expect, Locator } from '@playwright/test';
 import { link } from 'fs';
 import { text } from 'stream/consumers';
 
 const elements = [
   {
-    locator: (page) => page.getByRole('link', { name: 'Playwright logo Playwright' }),
+    locator: (page: Page): Locator =>
+       page.getByRole('link', { name: 'Playwright logo Playwright' }),
     name: 'Playwright logo',
     text: 'Playwright',
+    attribute: {
+      type: 'href',
+      value:'/'
+    }
   },
   {
     locator: (page) => page.getByRole('link', { name: 'Docs' }),
     name: 'Docs link',
     text: 'Docs',
+    attribute: {
+      type: 'href',
+      value:'/docs/intro'
+    }
   },
   {
     locator: (page) => page.getByRole('link', { name: 'API' }),
     name: 'API link',
     text: 'API',
+    attribute: {
+      type: 'href',
+      value:'/docs/api/class-playwright'
+    }
   },
   {
     locator: (page) => page.getByRole('button', { name: 'Node.js' }),
@@ -27,14 +40,26 @@ const elements = [
     locator: (page) => page.getByRole('link', { name: 'Community' }),
     name: 'Community link',
     text: 'Community',
+    attribute: {
+      type: 'href',
+      value:'/community/welcome' 
+    }
   },
   {
     locator: (page) => page.getByRole('link', { name: 'GitHub repository' }),
     name: 'GitHub',
+    attribute: {
+      type: 'href',
+      value:'https://github.com/microsoft/playwright', 
+    }
   },
   {
     locator: (page) => page.getByRole('link', { name: 'Discord server' }),
     name: 'Discord',
+    attribute: {
+      type: 'href',
+      value:'https://aka.ms/playwright/discord', 
+    }
   },
   {
     locator: (page) => page.getByRole('button', { name: 'Switch between dark and light' }),
@@ -69,29 +94,14 @@ test.describe('Main Page Tests', () => {
   });
 
   test('Checking href attributes', async ({ page }) => {
-    await expect(page.getByRole('link', { name: 'Playwright logo Playwright' })).toHaveAttribute(
-      'href',
-      '/',
-    );
-
-    await expect(page.getByRole('link', { name: 'Docs' })).toHaveAttribute('href', '/docs/intro');
-    await expect(page.getByRole('link', { name: 'API' })).toHaveAttribute(
-      'href',
-      '/docs/api/class-playwright',
-    );
-    await expect(page.getByRole('link', { name: 'Community' })).toHaveAttribute(
-      'href',
-      '/community/welcome',
-    );
-    await expect(page.getByRole('link', { name: 'GitHub repository' })).toHaveAttribute(
-      'href',
-      'https://github.com/microsoft/playwright',
-    );
-    await expect(page.getByRole('link', { name: 'Discord server' })).toHaveAttribute(
-      'href',
-      'https://aka.ms/playwright/discord',
-    );
-  });
+  for (const { locator, name, attribute } of elements) {
+    if (attribute) {
+      await test.step(`Check href attribute for ${name}`, async () => {
+        await expect(locator(page)).toHaveAttribute(attribute.type, attribute.value);
+      });
+    }
+  }
+});
 
   test('Checking switch to dark mode', async ({ page }) => {
     await page.getByTitle('system mode').click();
