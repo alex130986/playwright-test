@@ -1,13 +1,13 @@
 import test, { Page, Locator, expect } from '@playwright/test';
 
-interface Elements{
-  locator: (page: Page) => Locator; 
-  name: string ;
+interface Elements {
+  locator: (page: Page) => Locator;
+  name: string;
   text?: string;
   attribute?: {
     type: string;
     value: string;
-  }
+  };
 }
 
 const elements: Elements[] = [
@@ -61,7 +61,7 @@ const elements: Elements[] = [
       value: 'https://github.com/microsoft/playwright',
     },
   },
-   
+
   {
     locator: (page: Page): Locator =>
       page.getByRole('button', { name: 'Switch between dark and light' }),
@@ -72,9 +72,10 @@ const elements: Elements[] = [
     name: 'Search bar',
   },
   {
-    locator: (page: Page): Locator => page.getByRole('heading', { name: 'Playwright enables reliable' }),
+    locator: (page: Page): Locator =>
+      page.getByRole('heading', { name: 'Playwright enables reliable' }),
     name: 'Title',
-    text: 'Playwright enables reliable end-to-end testing for modern web apps.'
+    text: 'Playwright enables reliable end-to-end testing for modern web apps.',
   },
   {
     locator: (page: Page): Locator => page.getByRole('link', { name: 'Get started' }),
@@ -86,6 +87,8 @@ const elements: Elements[] = [
     },
   },
 ];
+
+const lightModes = ['light', 'dark']
 
 test.describe('Main Page Tests', () => {
   test.beforeEach(async ({ page }) => {
@@ -124,4 +127,14 @@ test.describe('Main Page Tests', () => {
     await page.getByTitle('light mode').click();
     await expect(page.locator('html')).toHaveAttribute('data-theme', 'dark');
   });
+
+  for (const value of lightModes) {
+  test(`Checking style of active ${value} mode`, async ({ page }) => {
+    await page.evaluate((value)  =>{
+      document.querySelector('html')?.setAttribute('data-theme', value )
+    }, value)
+    await expect(page).toHaveScreenshot(`pageWith ${value}Mode.png`);
+  });
+}
+  
 });
